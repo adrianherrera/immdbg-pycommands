@@ -1,2 +1,2 @@
-# immunity-debugger-pycommands
-Collection of PyCommands for Immunity Debugger
+# Immunity Debugger PyCommands
+A collection of PyCommands for Immunity Debugger.
