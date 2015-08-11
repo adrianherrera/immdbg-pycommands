@@ -57,7 +57,7 @@ def usage(imm):
 
 
 def _display_results(imm, matches):
-    """Display results from the Yara matches in a tale.
+    """Display results from the Yara matches in a table.
 
     Args:
         imm: Immunity debugger object
