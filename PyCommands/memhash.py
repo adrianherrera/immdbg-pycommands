@@ -32,8 +32,8 @@ from pefile import PE
 
 
 __VERSION__ = '1.00'
-NAME        = 'memhash'
-DESC        = 'Hash a memory range or loaded module'
+NAME = 'memhash'
+DESC = 'Hash a memory range or loaded module'
 
 
 def usage(imm):
