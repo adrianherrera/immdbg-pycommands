@@ -5,3 +5,7 @@ A collection of PyCommands for Immunity Debugger.
 Calculates the MD5 sum of a given address range within the debugged process.
 This could, for example, be used to provide the user with a quick indication on
 whether a given address range has changed during execution.
+
+## `memyara.py`
+Run [Yara](http://http://plusvic.github.io/yara/) rules over a given address
+range within the debugged process.
