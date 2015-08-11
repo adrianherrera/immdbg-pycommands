@@ -96,7 +96,7 @@ def hash_address_range(imm, start_addr, end_addr):
     displayed in the log window.
 
     Args:
-        imm: Immunirt debugger object
+        imm: Immunity debugger object
         start_addr: Start address
         end_addr: End address
 
