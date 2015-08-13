@@ -24,7 +24,9 @@
 # SOFTWARE.
 #------------------------------------------------------------------------------
 
+import binascii
 import getopt
+import os
 
 import yara
 
@@ -64,11 +66,12 @@ def _display_results(imm, matches):
         matches: List of Yara matches
     """
     table = imm.createTable('Yara matches',
-                            ['Rule', 'Offset', 'Identifier', 'Offset'])
+                            ['Rule', 'Offset', 'Identifier', 'Data'])
 
     for match in matches:
-        table.add(0, [match.rule, '%ld' % match.strings[0], match.strings[1],
-                      match.strings[2]])
+        for offset, identifier, data in match.strings:
+            table.add(0, [match.rule, '%ld' % offset, identifier,
+                          binascii.hexlify(data)])
 
 
 def run_yara_on_module(imm, module_name, rules):
@@ -97,7 +100,7 @@ def run_yara_on_module(imm, module_name, rules):
     matches = rules.match(data=data)
     _display_results(imm, matches)
 
-    return '%d matches' % len(matches)
+    return '%d Yara matches' % len(matches)
 
 
 def run_yara_on_address_range(imm, start_addr, end_addr, rules):
@@ -138,7 +141,7 @@ def run_yara_on_address_range(imm, start_addr, end_addr, rules):
     matches = rules.match(data=data)
     _display_results(imm, matches)
 
-    return '%d matches' % len(matches)
+    return '%d Yara matches' % len(matches)
 
 
 def main(args):
@@ -150,7 +153,7 @@ def main(args):
 
     imm = Debugger()
     module = None
-    rules_file = None
+    rules_path = None
 
     try:
         opts, args = getopt.getopt(args, 'hm:r:')
@@ -165,17 +168,20 @@ def main(args):
         elif opt == '-m':
             module = arg
         elif opt == '-r':
-            rules_file = arg
+            if (arg.startswith('"') and arg.endswith('"')) or \
+                    (arg.startswith('\'') and arg.endswith('\'')):
+                arg = arg[1:-1]
+            rules_path = os.path.abspath(arg)
 
-    if not rules_file:
+    if not rules_path:
         usage(imm)
         return 'Incorrect arguments (Path to Yara rule file required)'
 
     # Compile the Yara rules
     try:
-        rules = yara.compile(filepath=rules_file)
-    except (yara.YaraSyntaxError, yara.YaraError):
-        return '%s is an invalid Yara rules file' % rules_file
+        rules = yara.compile(filepath=rules_path)
+    except (yara.Error, yara.SyntaxError):
+        return '%s is an invalid Yara rules file' % rules_path
 
     if module:
         return run_yara_on_module(imm, module, rules)
